@@ -2,212 +2,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inkspire | Library Management</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6fb;
-      color: #17233d;
-    }
-    header {
-      background: #142746;
-      color: white;
-      padding: 22px 7%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .logo { font-size: 27px; font-weight: bold; }
-    .logo span { color: #79d8c3; }
-    header p { margin: 6px 0 0; color: #cbd6e8; }
-    main { max-width: 1100px; margin: auto; padding: 30px 18px; }
-    .hero {
-      background: linear-gradient(120deg, #203f69, #397b91);
-      color: white;
-      padding: 38px 28px;
-      border-radius: 18px;
-      margin-bottom: 25px;
-    }
-    .hero h1 { font-size: clamp(27px, 5vw, 42px); margin: 0 0 12px; }
-    .hero p { line-height: 1.6; max-width: 650px; }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-    .stat, .panel {
-      background: white;
-      padding: 21px;
-      border-radius: 14px;
-      box-shadow: 0 4px 18px #1427460c;
-    }
-    .stat h2 { margin: 8px 0 0; color: #287d78; font-size: 30px; }
-    .stat p { margin: 0; color: #66738a; }
-    .panel { margin-bottom: 22px; }
-    h2 { margin-top: 0; }
-    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin: 15px 0; }
-    input, button {
-      font: inherit;
-      padding: 12px 14px;
-      border-radius: 8px;
-    }
-    input {
-      border: 1px solid #ccd4e2;
-      min-width: 0;
-      flex: 1;
-    }
-    button {
-      border: 0;
-      background: #287d78;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover { background: #20645f; }
-    .book-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-    .book {
-      border: 1px solid #e4e9f1;
-      padding: 17px;
-      border-radius: 12px;
-    }
-    .book .cover { font-size: 35px; }
-    .book h3 { margin: 10px 0 6px; }
-    .muted { color: #6b7890; font-size: 14px; }
-    .available { color: #21815c; font-weight: bold; }
-    .unavailable { color: #b45335; font-weight: bold; }
-    .remove { background: #b74343; margin-top: 10px; }
-    footer { text-align: center; padding: 25px; color: #68758b; }
-    .note { font-size: 13px; color: #68758b; line-height: 1.5; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inkspire | Library Management</title>
+<style>
+:root{--navy:#142746;--teal:#287d78;--bg:#f3f6fb;--muted:#718096}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#17233d}
+header{background:var(--navy);color:white;padding:20px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-size:27px;font-weight:bold}.logo span{color:#79d8c3}
+header small{color:#d1dced}
+.layout{display:flex;min-height:calc(100vh - 76px)}
+nav{width:220px;background:white;padding:20px 12px;flex-shrink:0}
+nav button{display:block;width:100%;text-align:left;margin:5px 0;background:transparent;color:#31415b;font-weight:normal}
+nav button.active,nav button:hover{background:#e3f3f0;color:#176b64}
+main{padding:26px;width:100%;max-width:1400px;margin:auto}
+h1{margin:0 0 8px}h2{font-size:19px}
+.muted{color:var(--muted);font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0}
+.card,.panel{background:white;border-radius:13px;padding:19px;box-shadow:0 3px 14px #17233d0a}
+.card p{margin:0;color:var(--muted)}.card strong{display:block;font-size:29px;margin-top:12px;color:var(--teal)}
+.panel{margin-bottom:20px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+input,select{padding:11px;border:1px solid #d7deea;border-radius:7px;background:white;min-width:0}
+.toolbar input{flex:1}
+button{border:0;border-radius:7px;padding:11px 14px;background:var(--teal);color:white;cursor:pointer;font-weight:bold}
+button:hover{filter:brightness(.94)}
+button.secondary{background:#e8edf5;color:#263a58}
+button.danger{background:#b74343}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{text-align:left;padding:12px 10px;border-bottom:1px solid #e8edf4;font-size:14px}
+th{background:#f7f9fc;color:#52627a}
+.table-wrap{overflow-x:auto}
+.badge{display:inline-block;border-radius:20px;padding:5px 9px;font-size:12px;background:#dff5e9;color:#176b49}
+.badge.red{background:#ffe6e2;color:#a63232}
+.badge.orange{background:#fff0d2;color:#855b00}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.form-grid input,.form-grid select{width:100%}
+.form-actions{margin-top:14px;display:flex;gap:8px}
+.hidden{display:none!important}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+footer{text-align:center;padding:22px;color:var(--muted);font-size:13px}
+@media(max-width:800px){.layout{display:block}nav{width:100%;display:flex;overflow-x:auto;padding:8px}nav button{white-space:nowrap;width:auto;margin:0 3px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:16px}.form-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-  <header>
-    <div>
-      <div class="logo">✦ Ink<span>spire</span></div>
-      <p>Your gateway to knowledge</p>
-    </div>
-    <div>LIBRARY MANAGEMENT SYSTEM</div>
-  </header>
+<header>
+  <div><div class="logo">✦ Ink<span>spire</span></div><small>Library Management System</small></div>
+  <div>📚 Read · Discover · Imagine</div>
+</header>
 
-  <main>
-    <section class="hero">
-      <h1>Discover your next great read.</h1>
-      <p>Welcome to Inkspire, your digital library. Explore books, manage your collection, and keep your love for reading alive.</p>
-      <button onclick="document.getElementById('search').focus()">Explore the library ↓</button>
-    </section>
+<div class="layout">
+<nav>
+  <button class="active" data-page="dashboard">▦ Dashboard</button>
+  <button data-page="books">📚 Book Inventory</button>
+  <button data-page="students">👥 Students</button>
+  <button data-page="loans">↔ Issue / Return</button>
+</nav>
 
-    <section class="stats">
-      <div class="stat"><p>Total books</p><h2 id="total">6</h2></div>
-      <div class="stat"><p>Available books</p><h2 id="available">5</h2></div>
-      <div class="stat"><p>Books issued</p><h2 id="issued">1</h2></div>
-    </section>
+<main>
+<section id="dashboard" class="page">
+  <h1>Library Dashboard</h1>
+  <p class="muted">An overview of your library's collection and activity.</p>
+  <div class="stats">
+    <div class="card"><p>Book titles</p><strong id="statTitles">0</strong></div>
+    <div class="card"><p>Copies available</p><strong id="statAvailable">0</strong></div>
+    <div class="card"><p>Registered students</p><strong id="statStudents">0</strong></div>
+    <div class="card"><p>Books currently issued</p><strong id="statLoans">0</strong></div>
+  </div>
+  <div class="panel"><h2>Recent transactions</h2><div id="recent"></div></div>
+  <div class="panel"><h2>Overdue books</h2><div id="overdue"></div></div>
+</section>
 
-    <section class="panel">
-      <h2>📚 Book collection</h2>
-      <p class="muted">Search for a title or author, or add a book to this demo collection.</p>
-      <div class="controls">
-        <input id="search" placeholder="Search books or authors..." oninput="renderBooks()">
+<section id="books" class="page hidden">
+  <h1>Book Inventory</h1><p class="muted">Add and manage the books in your collection.</p>
+  <div class="panel">
+    <h2 id="bookFormTitle">Add a book</h2>
+    <form id="bookForm">
+      <div class="form-grid">
+        <input id="bookId" placeholder="Book ID (e.g. B001)" required>
+        <input id="bookTitle" placeholder="Book title" required>
+        <input id="bookAuthor" placeholder="Author" required>
+        <input id="bookCategory" placeholder="Category (e.g. Fiction)" required>
+        <input id="bookQty" type="number" min="1" value="1" placeholder="Total copies" required>
       </div>
-      <div id="books" class="book-list"></div>
-    </section>
+      <div class="form-actions"><button type="submit">Save book</button><button type="button" class="secondary hidden" id="cancelBook">Cancel edit</button></div>
+    </form>
+  </div>
+  <div class="panel">
+    <div class="toolbar"><input id="bookSearch" placeholder="Search by ID, title, author or category..."></div>
+    <div id="bookTable" class="table-wrap"></div>
+  </div>
+</section>
 
-    <section class="panel">
-      <h2>➕ Add a book</h2>
-      <div class="controls">
-        <input id="title" placeholder="Book title">
-        <input id="author" placeholder="Author name">
-        <button onclick="addBook()">Add book</button>
+<section id="students" class="page hidden">
+  <h1>Student Records</h1><p class="muted">Register and manage library members.</p>
+  <div class="panel">
+    <h2 id="studentFormTitle">Register a student</h2>
+    <form id="studentForm">
+      <div class="form-grid">
+        <input id="studentId" placeholder="Student ID" required>
+        <input id="studentName" placeholder="Full name" required>
+        <input id="studentEmail" type="email" placeholder="Email address">
+        <input id="studentPhone" type="tel" placeholder="Phone number">
       </div>
-      <p id="message" class="muted"></p>
-      <p class="note">Expo demo: this first version stores changes in this browser only. A hosted database and Java backend can be connected in a later step.</p>
-    </section>
-  </main>
+      <div class="form-actions"><button type="submit">Save student</button><button type="button" class="secondary hidden" id="cancelStudent">Cancel edit</button></div>
+    </form>
+  </div>
+  <div class="panel">
+    <div class="toolbar"><input id="studentSearch" placeholder="Search students..."></div>
+    <div id="studentTable" class="table-wrap"></div>
+  </div>
+</section>
 
-  <footer>© 2026 Inkspire Library · Read. Discover. Imagine.</footer>
+<section id="loans" class="page hidden">
+  <h1>Issue & Return</h1><p class="muted">Record loans and track expected return dates.</p>
+  <div class="panel">
+    <h2>Issue a book</h2>
+    <form id="loanForm">
+      <div class="form-grid">
+        <select id="loanStudent" required><option value="">Select student</option></select>
+        <select id="loanBook" required><option value="">Select available book</option></select>
+        <input id="loanDate" type="date" required>
+        <input id="dueDate" type="date" required>
+      </div>
+      <div class="form-actions"><button type="submit">Issue book</button></div>
+    </form>
+    <p class="muted">A book can only be issued if a copy is available and the student is registered.</p>
+  </div>
+  <div class="panel">
+    <div class="toolbar"><input id="loanSearch" placeholder="Search by student, book or ID..."><select id="loanFilter"><option value="all">All transactions</option><option value="issued">Currently issued</option><option value="returned">Returned</option><option value="overdue">Overdue</option></select></div>
+    <div id="loanTable" class="table-wrap"></div>
+  </div>
+</section>
+</main>
+</div>
+<footer>Inkspire Library Management · Browser demo · Data saved on this device</footer>
 
-  <script>
-    let books = [
-      { title: "The Alchemist", author: "Paulo Coelho", available: true },
-      { title: "Wings of Fire", author: "A. P. J. Abdul Kalam", available: true },
-      { title: "Atomic Habits", author: "James Clear", available: true },
-      { title: "The Hobbit", author: "J. R. R. Tolkien", available: true },
-      { title: "Ikigai", author: "Héctor García", available: true },
-      { title: "Rich Dad Poor Dad", author: "Robert Kiyosaki", available: false }
-    ];
+<script>
+const KEY = "inkspireLibraryV2";
+const initial = {
+ books:[
+  {id:"B001",title:"The Alchemist",author:"Paulo Coelho",category:"Fiction",qty:3},
+  {id:"B002",title:"Wings of Fire",author:"A. P. J. Abdul Kalam",category:"Biography",qty:2},
+  {id:"B003",title:"Atomic Habits",author:"James Clear",category:"Self-help",qty:2},
+  {id:"B004",title:"The Hobbit",author:"J. R. R. Tolkien",category:"Fantasy",qty:2},
+  {id:"B005",title:"Ikigai",author:"Héctor García",category:"Lifestyle",qty:1}
+ ],
+ students:[
+  {id:"ST001",name:"Aarav Kumar",email:"aarav@example.com",phone:""},
+  {id:"ST002",name:"Ananya Nair",email:"ananya@example.com",phone:""}
+ ],
+ loans:[]
+};
+let data;
+try {
+ const saved = localStorage.getItem(KEY);
+ data = saved ? JSON.parse(saved) : initial;
+ if (!data || !Array.isArray(data.books) || !Array.isArray(data.students) || !Array.isArray(data.loans)) data = initial;
+} catch { data = initial; }
 
-    function renderBooks() {
-      const query = document.getElementById("search").value.toLowerCase();
-      const filtered = books.filter(book =>
-        book.title.toLowerCase().includes(query) ||
-        book.author.toLowerCase().includes(query)
-      );
+let editingBook = null, editingStudent = null;
+const $ = id => document.getElementById(id);
+const today = () => new Date().toLocaleDateString("en-CA");
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render();}
+function esc(v){return String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function available(book){return book.qty-data.loans.filter(l=>l.bookId===book.id&&!l.returned).length;}
+function overdue(loan){return !loan.returned&&loan.dueDate<today();}
+function bookName(id){return data.books.find(b=>b.id===id)?.title||"(book removed)";}
+function studentName(id){return data.students.find(s=>s.id===id)?.name||"(student removed)";}
+function table(headers,rows){return rows.length?`<table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>`:`<div class="empty">No records to display.</div>`;}
+function go(page){
+ document.querySelectorAll(".page").forEach(el=>el.classList.toggle("hidden",el.id!==page));
+ document.querySelectorAll("nav button").forEach(el=>el.classList.toggle("active",el.dataset.page===page));
+}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>go(b.dataset.page)));
 
-      document.getElementById("books").innerHTML = filtered.length
-        ? filtered.map(book => {
-            const index = books.indexOf(book);
-            return `<article class="book">
-              <div class="cover">📖</div>
-              <h3>${escapeHTML(book.title)}</h3>
-              <p class="muted">by ${escapeHTML(book.author)}</p>
-              <p class="${book.available ? "available" : "unavailable"}">
-                ${book.available ? "● Available" : "● Issued"}
-              </p>
-              <button onclick="toggleBook(${index})">
-                ${book.available ? "Issue book" : "Return book"}
-              </button>
-              <button class="remove" onclick="removeBook(${index})">Remove</button>
-            </article>`;
-          }).join("")
-        : "<p>No books found.</p>";
-
-      document.getElementById("total").textContent = books.length;
-      document.getElementById("available").textContent = books.filter(b => b.available).length;
-      document.getElementById("issued").textContent = books.filter(b => !b.available).length;
-    }
-
-    function escapeHTML(value) {
-      return value.replace(/[&<>"']/g, char => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;",
-        '"': "&quot;", "'": "&#39;"
-      })[char]);
-    }
-
-    function addBook() {
-      const title = document.getElementById("title").value.trim();
-      const author = document.getElementById("author").value.trim();
-      const message = document.getElementById("message");
-
-      if (!title || !author) {
-        message.textContent = "Please enter both a book title and an author.";
-        return;
-      }
-
-      books.push({ title, author, available: true });
-      document.getElementById("title").value = "";
-      document.getElementById("author").value = "";
-      message.textContent = "Book added successfully!";
-      renderBooks();
-    }
-
-    function toggleBook(index) {
-      books[index].available = !books[index].available;
-      renderBooks();
-    }
-
-    function removeBook(index) {
-      books.splice(index, 1);
-      renderBooks();
-    }
-
-    renderBooks();
-  </script>
+$("bookForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const id=$("bookId").value.trim(), title=$("bookTitle").value.trim();
+ const author=$("bookAuthor").value.trim(),category=$("bookCategory").value.trim(),qty=Number($("bookQty").value);
+ const existing=data.books.find(b=>b.id.toLowerCase()===id.toLowerCase());
+ if(existing&&existing.id!==editingBook)return alert("That Book ID is already in use.");
+ if(!id||!title||!author||!category||!Number.isInteger(qty)||qty<1)return alert("Please enter valid book details.");
+ const borrowed=data.loans.filter(l=>l.bookId===editingBook&&!l.returned).length;
+ if(editingBook&&qty<borrowed)return alert("Total copies cannot be fewer than copies currently issued.");
+ if(editingBook){const b=data.books.find(b=>b.id===editingBook);Object.assign(b,{id,title,author,category,qty});data.loans.forEach(l=>{if(l.bookId===editingBook)l.bookId=id;});}
+ else data.books.push({id,title,author,category,qty});
+ resetBook();save();
+});
+function resetBook(){editingBook=null;$("bookForm").reset();$("bookQty").value=1;$("bookFormTitle").textContent="Add a book";$("cancelBook").classList.add("hidden");}
+$("cancelBook").onclick=resetBook;
+function editBook(id){
+ const b=data.books.find(x=>x.id===id);if(!b)return;
+ editingBook=id;$("bookId").value=b.id;$("bookId").readOnly=true;
+ $("bookTitle").value=b.title;$("bookAuthor").value=b.author;$("bookCategory").value=b.category;$("bookQty").value=b.qty;
+ $("bookFormTitle").textContent="Edit book";$("cancelBook").classList.remove("hidden");go("books");window.scrollTo(0,0);
+}
+function deleteBook(id){
+ if(data.loans.some(l=>l.bookId===id&&!l.returned))return alert("Return all copies before removing this book.");
+ if(!confirm("Delete this book from the inventory?"))return;
+ data.books=data.books.filter(b=>b.id!==id);save();
+}
+$("bookSearch").addEventListener("input",renderBooks);
+function renderBooks(){
+ const q=$("bookSearch").value.toLowerCase();
+ $("bookTable").innerHTML=table(["ID","Book","Author","Category","Available / Total","Actions"],data.books.filter(b=>[b.id,b.title,b.author,b.category].some(v=>v.toLowerCase().includes(q))).map(b=>`<tr><td>${esc(b.id)}</td><td>${esc(b.title)}</td><td>${esc(b.author)}</td><td>${esc(b.category)}</td><td>${available(b)} / ${b.qty}</td><td><button class="secondary" onclick="editBook('${esc(b.id)}')">Edit</button> <button class="danger" onclick="deleteBook('${esc(b.id)}')">Delete</button></td></tr>`));
+}
+$("studentForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const id=$("studentId").value.trim(),name=$("studentName").value.trim(),email=$("studentEmail").value.trim(),phone=$("studentPhone").value.trim();
+ const existing=data.students.find(s=>s.id.toLowerCase()===id.toLowerCase());
+ if(existing&&existing.id!==editingStudent)return alert("That Student ID is already in use.");
+ if(!id||!name)return alert("Student ID and name are required.");
+ if(editingStudent){const s=data.students.find(s=>s.id===editingStudent);Object.assign(s,{id,name,email,phone});data.loans.forEach(l=>{if(l.studentId===editingStudent)l.studentId=id;});}
+ else data.students.push({id,name,email,phone});
+ resetStudent();save();
+});
+function resetStudent(){editingStudent=null;$("studentForm").reset();$("studentId").readOnly=false;$("studentFormTitle").textContent="Register a student";$("cancelStudent").classList.add("hidden");}
+$("cancelStudent").onclick=resetStudent;
+function editStudent(id){
+ const s=data.students.find(x=>x.id===id);if(!s)return;
+ editingStudent=id;$("studentId").value=s.id;$("studentId").readOnly=true;$("studentName").value=s.name;$("studentEmail").value=s.email;$("studentPhone").value=s.phone;
+ $("studentFormTitle").textContent="Edit student";$("cancelStudent").classList.remove("hidden");go("students");window.scrollTo(0,0);
+}
+function deleteStudent(id){
+ if(data.loans.some(l=>l.studentId===id&&!l.returned))return alert("This student has a book that has not been returned.");
+ if(!confirm("Delete this student?"))return;
+ data.students=data.students.filter(s=>s.id!==id);save();
+}
+$("studentSearch").addEventListener("input",renderStudents);
+function renderStudents(){
+ const q=$("studentSearch").value.toLowerCase();
+ $("studentTable").innerHTML=table(["Student ID","Name","Email","Phone","Actions"],data.students.filter(s=>[s.id,s.name,s.email,s.phone].some(v=>v.toLowerCase().includes(q))).map(s=>`<tr><td>${esc(s.id)}</td><td>${esc(s.name)}</td><td>${esc(s.email||"—")}</td><td>${esc(s.phone||"—")}</td><td><button class="secondary" onclick="editStudent('${esc(s.id)}')">Edit</button> <button class="danger" onclick="deleteStudent('${esc(s.id)}')">Delete</button></td></tr>`));
+}
+$("loanDate").value=today();
+const due=new Date();due.setDate(due.getDate()+14);$("dueDate").value=due.toLocaleDateString("en-CA");
+$("loanDate").addEventListener("change",()=>{if($("dueDate").value<$("loanDate").value)$("dueDate").value=$("loanDate").value;});
+$("loanForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const studentId=$("loanStudent").value,bookId=$("loanBook").value,issueDate=$("loanDate").value,dueDate=$("dueDate").value;
+ const b=data.books.find(b=>b.id===bookId);
+ if(!data.students.some(s=>s.id===studentId))return alert("Select a registered student.");
+ if(!b||available(b)<1)return alert("No copies of this book are available.");
+ if(!issueDate||!dueDate||dueDate<issueDate)return alert("The due date must be on or after the issue date.");
+ data.loans.push({id:"L"+Date.now().toString().slice(-8),studentId,bookId,issueDate,dueDate,returned:false,returnDate:""});
+ $("loanForm").reset();$("loanDate").value=today();$("dueDate").value=due.toLocaleDateString("en-CA");save();
+});
+function returnLoan(id){
+ const l=data.loans.find(l=>l.id===id);if(!l||l.returned)return;
+ if(!confirm("Confirm that this book has been returned?"))return;
+ l.returned=true;l.returnDate=today();save();
+}
+$("loanSearch").addEventListener("input",renderLoans);$("loanFilter").addEventListener("change",renderLoans);
+function renderLoans(){
+ const q=$("loanSearch").value.toLowerCase(),filter=$("loanFilter").value;
+ const rows=data.loans.filter(l=>{
+ const text=[l.id,l.studentId,studentName(l.studentId),l.bookId,bookName(l.bookId)].join(" ").toLowerCase();
+ return text.includes(q)&&(filter==="all"||(filter==="issued"&&!l.returned)||(filter==="returned"&&l.returned)||(filter==="overdue"&&overdue(l)));
+ }).slice().reverse().map(l=>`<tr><td>${esc(l.id)}</td><td>${esc(studentName(l.studentId))} (${esc(l.studentId)})</td><td>${esc(bookName(l.bookId))}</td><td>${esc(l.issueDate)}</td><td>${esc(l.dueDate)}</td><td>${l.returned?`<span class="badge">Returned ${esc(l.returnDate)}</span>`:overdue(l)?'<span class="badge red">Overdue</span>':'<span class="badge orange">Issued</span>'}</td><td>${l.returned?"—":`<button onclick="returnLoan('${esc(l.id)}')">Return</button>`}</td></tr>`);
+ $("loanTable").innerHTML=table(["Loan ID","Student","Book","Issued","Due","Status","Action"],rows);
+}
+function renderDashboard(){
+ $("statTitles").textContent=data.books.length;
+ $("statAvailable").textContent=data.books.reduce((n,b)=>n+available(b),0);
+ $("statStudents").textContent=data.students.length;
+ $("statLoans").textContent=data.loans.filter(l=>!l.returned).length;
+ const recent=data.loans.slice(-5).reverse();
+ $("recent").innerHTML=recent.length?table(["Student","Book","Issue date","Status"],recent.map(l=>`<tr><td>${esc(studentName(l.studentId))}</td><td>${esc(bookName(l.bookId))}</td><td>${esc(l.issueDate)}</td><td>${l.returned?'<span class="badge">Returned</span>':overdue(l)?'<span class="badge red">Overdue</span>':'<span class="badge orange">Issued</span>'}</td></tr>`)):'<div class="empty">No transactions yet. Issue a book to see activity here.</div>';
+ const late=data.loans.filter(overdue);
+ $("overdue").innerHTML=late.length?table(["Student","Book","Due date"],late.map(l=>`<tr><td>${esc(studentName(l.studentId))}</td><td>${esc(bookName(l.bookId))}</td><td><span class="badge red">${esc(l.dueDate)}</span></td></tr>`)):'<div class="empty">No overdue books. Great!</div>';
+}
+function render(){
+ $("studentId").readOnly=!!editingStudent;
+ $("bookId").readOnly=!!editingBook;
+ $("loanStudent").innerHTML='<option value="">Select student</option>'+data.students.map(s=>`<option value="${esc(s.id)}">${esc(s.id)} — ${esc(s.name)}</option>`).join("");
+ $("loanBook").innerHTML='<option value="">Select available book</option>'+data.books.filter(b=>available(b)>0).map(b=>`<option value="${esc(b.id)}">${esc(b.title)} (${available(b)} available)</option>`).join("");
+ renderDashboard();renderBooks();renderStudents();renderLoans();
+}
+render();
+</script>
 </body>
 </html>
 ```
