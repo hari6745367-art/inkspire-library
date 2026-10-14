@@ -1,0 +1,213 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inkspire | Library Management</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      color: #17233d;
+    }
+    header {
+      background: #142746;
+      color: white;
+      padding: 22px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .logo { font-size: 27px; font-weight: bold; }
+    .logo span { color: #79d8c3; }
+    header p { margin: 6px 0 0; color: #cbd6e8; }
+    main { max-width: 1100px; margin: auto; padding: 30px 18px; }
+    .hero {
+      background: linear-gradient(120deg, #203f69, #397b91);
+      color: white;
+      padding: 38px 28px;
+      border-radius: 18px;
+      margin-bottom: 25px;
+    }
+    .hero h1 { font-size: clamp(27px, 5vw, 42px); margin: 0 0 12px; }
+    .hero p { line-height: 1.6; max-width: 650px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .stat, .panel {
+      background: white;
+      padding: 21px;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px #1427460c;
+    }
+    .stat h2 { margin: 8px 0 0; color: #287d78; font-size: 30px; }
+    .stat p { margin: 0; color: #66738a; }
+    .panel { margin-bottom: 22px; }
+    h2 { margin-top: 0; }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin: 15px 0; }
+    input, button {
+      font: inherit;
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
+    input {
+      border: 1px solid #ccd4e2;
+      min-width: 0;
+      flex: 1;
+    }
+    button {
+      border: 0;
+      background: #287d78;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #20645f; }
+    .book-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .book {
+      border: 1px solid #e4e9f1;
+      padding: 17px;
+      border-radius: 12px;
+    }
+    .book .cover { font-size: 35px; }
+    .book h3 { margin: 10px 0 6px; }
+    .muted { color: #6b7890; font-size: 14px; }
+    .available { color: #21815c; font-weight: bold; }
+    .unavailable { color: #b45335; font-weight: bold; }
+    .remove { background: #b74343; margin-top: 10px; }
+    footer { text-align: center; padding: 25px; color: #68758b; }
+    .note { font-size: 13px; color: #68758b; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="logo">✦ Ink<span>spire</span></div>
+      <p>Your gateway to knowledge</p>
+    </div>
+    <div>LIBRARY MANAGEMENT SYSTEM</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Discover your next great read.</h1>
+      <p>Welcome to Inkspire, your digital library. Explore books, manage your collection, and keep your love for reading alive.</p>
+      <button onclick="document.getElementById('search').focus()">Explore the library ↓</button>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><p>Total books</p><h2 id="total">6</h2></div>
+      <div class="stat"><p>Available books</p><h2 id="available">5</h2></div>
+      <div class="stat"><p>Books issued</p><h2 id="issued">1</h2></div>
+    </section>
+
+    <section class="panel">
+      <h2>📚 Book collection</h2>
+      <p class="muted">Search for a title or author, or add a book to this demo collection.</p>
+      <div class="controls">
+        <input id="search" placeholder="Search books or authors..." oninput="renderBooks()">
+      </div>
+      <div id="books" class="book-list"></div>
+    </section>
+
+    <section class="panel">
+      <h2>➕ Add a book</h2>
+      <div class="controls">
+        <input id="title" placeholder="Book title">
+        <input id="author" placeholder="Author name">
+        <button onclick="addBook()">Add book</button>
+      </div>
+      <p id="message" class="muted"></p>
+      <p class="note">Expo demo: this first version stores changes in this browser only. A hosted database and Java backend can be connected in a later step.</p>
+    </section>
+  </main>
+
+  <footer>© 2026 Inkspire Library · Read. Discover. Imagine.</footer>
+
+  <script>
+    let books = [
+      { title: "The Alchemist", author: "Paulo Coelho", available: true },
+      { title: "Wings of Fire", author: "A. P. J. Abdul Kalam", available: true },
+      { title: "Atomic Habits", author: "James Clear", available: true },
+      { title: "The Hobbit", author: "J. R. R. Tolkien", available: true },
+      { title: "Ikigai", author: "Héctor García", available: true },
+      { title: "Rich Dad Poor Dad", author: "Robert Kiyosaki", available: false }
+    ];
+
+    function renderBooks() {
+      const query = document.getElementById("search").value.toLowerCase();
+      const filtered = books.filter(book =>
+        book.title.toLowerCase().includes(query) ||
+        book.author.toLowerCase().includes(query)
+      );
+
+      document.getElementById("books").innerHTML = filtered.length
+        ? filtered.map(book => {
+            const index = books.indexOf(book);
+            return `<article class="book">
+              <div class="cover">📖</div>
+              <h3>${escapeHTML(book.title)}</h3>
+              <p class="muted">by ${escapeHTML(book.author)}</p>
+              <p class="${book.available ? "available" : "unavailable"}">
+                ${book.available ? "● Available" : "● Issued"}
+              </p>
+              <button onclick="toggleBook(${index})">
+                ${book.available ? "Issue book" : "Return book"}
+              </button>
+              <button class="remove" onclick="removeBook(${index})">Remove</button>
+            </article>`;
+          }).join("")
+        : "<p>No books found.</p>";
+
+      document.getElementById("total").textContent = books.length;
+      document.getElementById("available").textContent = books.filter(b => b.available).length;
+      document.getElementById("issued").textContent = books.filter(b => !b.available).length;
+    }
+
+    function escapeHTML(value) {
+      return value.replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;",
+        '"': "&quot;", "'": "&#39;"
+      })[char]);
+    }
+
+    function addBook() {
+      const title = document.getElementById("title").value.trim();
+      const author = document.getElementById("author").value.trim();
+      const message = document.getElementById("message");
+
+      if (!title || !author) {
+        message.textContent = "Please enter both a book title and an author.";
+        return;
+      }
+
+      books.push({ title, author, available: true });
+      document.getElementById("title").value = "";
+      document.getElementById("author").value = "";
+      message.textContent = "Book added successfully!";
+      renderBooks();
+    }
+
+    function toggleBook(index) {
+      books[index].available = !books[index].available;
+      renderBooks();
+    }
+
+    function removeBook(index) {
+      books.splice(index, 1);
+      renderBooks();
+    }
+
+    renderBooks();
+  </script>
+</body>
+</html>
+```
